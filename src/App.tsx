@@ -1,4 +1,4 @@
-import CheckListPage from './pages/checkList';
+import { CheckListPage } from './pages/checkList';
 
 function App() {
   return <CheckListPage />;

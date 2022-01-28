@@ -132,4 +132,7 @@ table {
 body{
   min-height: 100vh;
 }
+*{
+  font-size: inherit;
+}
 `;

@@ -6,9 +6,14 @@ const sharedCss = css`
   color: var(--primary-color);
   border: 2px solid var(--primary-color);
   min-width: 80px;
+  line-height: 40px;
+  height: 40px;
   &[aria-checked='true'] {
     background: var(--primary-color);
     color: white;
+  }
+  &:disabled {
+    border: 1px solid var(--disabled-color);
   }
 `;
 

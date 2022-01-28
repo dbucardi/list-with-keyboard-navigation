@@ -7,6 +7,16 @@ export const StyledContainer = styled.div`
 `;
 
 export const StyledActionsContainer = styled.div`
-  padding: 10px 20px 10px 20px;
+  padding-top: 10px;
   text-align: right;
+`;
+
+export const StyledMessageContainer = styled.div`
+  padding-top: 10px;
+  padding: 10px 20px 10px 20px;
+`;
+
+export const StyledErrorMessage = styled.div`
+  padding: 10px 0 10px 0;
+  color: red;
 `;

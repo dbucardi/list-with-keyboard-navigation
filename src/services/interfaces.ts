@@ -1,6 +1,6 @@
 export interface ICheckResultItem {
   checkId: string;
-  result: 'yes' | 'no';
+  result: 'yes' | 'no' | undefined;
 }
 
 export interface ICheckItem {

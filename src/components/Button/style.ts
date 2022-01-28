@@ -2,8 +2,7 @@ import styled from 'styled-components';
 
 export const StyledButton = styled.button`
   font-weight: 500;
-  font-size: 14px;
-  line-height: 40px;
+  line-height: 50px;
   letter-spacing: 0.4px;
   text-align: center;
   user-select: none;
@@ -12,14 +11,15 @@ export const StyledButton = styled.button`
   color: white;
 
   position: relative;
-  height: 40px;
+  height: 50px;
   padding: 0 16px;
   border-radius: 4px;
   cursor: pointer;
+  transition: all 0.3s ease-in-out;
 
   &:disabled {
-    background-color: #e6ebf4;
-    color: #bdc0cf;
+    background-color: var(--disabled-background-color);
+    color: var(--disabled-color);
     cursor: not-allowed;
   }
 
