@@ -11,7 +11,7 @@ export function CheckListPage() {
   const {
     checks,
     answersMap,
-    disabledQuestionsMap,
+    disabledChecksMap,
     disabledSubmit,
     error,
     submitError,
@@ -27,9 +27,9 @@ export function CheckListPage() {
 
   const renderCheckListForm = () => (
     <>
-      <CheckList>
+      <CheckList data-testid="checklist">
         {checks.map((check, index) => {
-          const disabledCheck = disabledQuestionsMap[check.id];
+          const disabledCheck = disabledChecksMap[check.id];
 
           return (
             <CheckListItem

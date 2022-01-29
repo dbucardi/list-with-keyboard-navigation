@@ -9,8 +9,8 @@ import { AnswersMap } from './interfaces';
  */
 export function isCheckFormSubmitAllowed(answersMap: AnswersMap, checks: ICheckItem[]): boolean {
   const hasNoResponse = Object.keys(answersMap).some((key) => answersMap[key] === 'no');
-  const answeredAllQuestions = Object.keys(answersMap).length === checks.length;
-  const allYesAnswers = answeredAllQuestions && Object.keys(answersMap).every((key) => answersMap[key] === 'yes');
+  const answeredAllChecks = Object.keys(answersMap).length === checks.length;
+  const allYesAnswers = answeredAllChecks && Object.keys(answersMap).every((key) => answersMap[key] === 'yes');
   if (allYesAnswers || hasNoResponse) {
     return true;
   }
@@ -23,15 +23,15 @@ export function isCheckFormSubmitAllowed(answersMap: AnswersMap, checks: ICheckI
  * @param checks the checks sorted by priority.
  * @returns a key value object identifying if the check should be disabled or enabled.
  */
-export function createDisabledQuestionsMap(answersMap: AnswersMap, checks: ICheckItem[]): { [key: string]: boolean } {
+export function createDisabledChecksMap(answersMap: AnswersMap, checks: ICheckItem[]): { [key: string]: boolean } {
   return checks.reduce((map, check, index) => {
-    const isFirstQuestion = index === 0;
-    if (isFirstQuestion) return { ...map, [check.id]: false };
+    const isFirstCheck = index === 0;
+    if (isFirstCheck) return { ...map, [check.id]: false };
 
-    const previousQuestion = checks[index - 1];
-    const previousAnswer = answersMap[previousQuestion.id];
-    const enableQuestion = previousAnswer === 'yes';
-    return { ...map, [check.id]: !enableQuestion };
+    const previousCheck = checks[index - 1];
+    const previousAnswer = answersMap[previousCheck.id];
+    const enableCheck = previousAnswer === 'yes';
+    return { ...map, [check.id]: !enableCheck };
   }, {});
 }
 
@@ -50,4 +50,20 @@ export function resetAnswersAhead(answersMap: AnswersMap, checks: ICheckItem[], 
     }
   });
   return newAnswersMap;
+}
+
+/**
+ * This method compares two check items by their priorities.
+ * @param check1 first check item
+ * @param check2 second check item
+ * @returns 1 if first is greater than second, -1 if first is lower than second and 0 if it's equal.
+ */
+export function compareCheckByPriority(check1: ICheckItem, check2: ICheckItem) {
+  if (check1.priority > check2.priority) {
+    return 1;
+  }
+  if (check1.priority < check2.priority) {
+    return -1;
+  }
+  return 0;
 }

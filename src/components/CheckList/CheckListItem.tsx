@@ -6,10 +6,11 @@ interface ICheckListItemProps {
   active: boolean;
   disabled?: boolean;
   onFocus?: React.FocusEventHandler<HTMLLIElement>;
+  onBlur?: React.FocusEventHandler<HTMLLIElement>;
 }
 
 export function CheckListItem(props: ICheckListItemProps) {
-  const { children, active, disabled = false, onFocus = () => {} } = props;
+  const { children, active, disabled = false, onFocus = () => {}, onBlur = () => {} } = props;
   const itemRef = useRef<HTMLLIElement>(null);
 
   useLayoutEffect(() => {
@@ -21,7 +22,7 @@ export function CheckListItem(props: ICheckListItemProps) {
   }, [active]);
 
   return (
-    <StyledCheckListItem tabIndex={disabled ? -1 : 0} onFocus={onFocus} ref={itemRef}>
+    <StyledCheckListItem tabIndex={disabled ? -1 : 0} onFocus={onFocus} onBlur={onBlur} ref={itemRef}>
       {children}
     </StyledCheckListItem>
   );
