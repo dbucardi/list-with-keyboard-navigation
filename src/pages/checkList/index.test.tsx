@@ -4,7 +4,10 @@ import { CheckListPage } from './index';
 import * as api from '../../services/api';
 import { ICheckItem, SubmitCheckResponse } from '../../services/interfaces';
 
-beforeEach(cleanup);
+beforeEach(() => {
+  cleanup();
+  jest.resetAllMocks();
+});
 
 describe('CheckListPage', () => {
   it('Should render the checklist', async () => {
