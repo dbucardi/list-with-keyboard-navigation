@@ -1,3 +1,19 @@
+# Checklist App
+
+This project is composed by the following main folders:
+
+## components
+
+Keeps all reusable components.
+
+## domain
+
+The main idea of this folder is try to keep business functions separated from the rest of the application, this way, it should be easier to migrate to other technology in the future, for example.
+
+## theme
+
+Keeps files related to the aplication styles like colors.
+
 # Getting Started with Create React App
 
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
