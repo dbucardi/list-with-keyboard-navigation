@@ -36,13 +36,13 @@ export function createDisabledChecksMap(answersMap: AnswersMap, checks: ICheckIt
 }
 
 /**
- * This method is responsible for resetting all answers that are ahead of the current answered check.
+ * This method is responsible for resetting all answers that are bellow the current answered check.
  * @param answersMap key value object where key is the check id and the value is the answer.
  * @param checks the checks sorted by priority.
  * @param answeredCheckIndex the index of the current check being answered.
  * @returns the new answersMap .
  */
-export function resetAnswersAhead(answersMap: AnswersMap, checks: ICheckItem[], answeredCheckIndex: number) {
+export function resetAllAnswersBellowIndex(answersMap: AnswersMap, checks: ICheckItem[], answeredCheckIndex: number) {
   const newAnswersMap = { ...answersMap };
   checks.forEach((check, index) => {
     if (index > answeredCheckIndex) {
@@ -66,4 +66,32 @@ export function compareCheckByPriority(check1: ICheckItem, check2: ICheckItem) {
     return -1;
   }
   return 0;
+}
+
+/**
+ * Gets the next check index considering the current index and the checks length.
+ * @param currentCheckIndex the current check index.
+ * @param checksLength the the checks length
+ * @returns the next item to be selected.
+ */
+export function getNextCheckItemIndex(currentCheckIndex: number, checksLength: number) {
+  const nextCheckIndex = currentCheckIndex + 1;
+  if (nextCheckIndex > checksLength - 1) {
+    return 0;
+  }
+  return nextCheckIndex;
+}
+
+/**
+ * Gets the previous check index considering the current index and the the checks length.
+ * @param currentCheckIndex the current check index.
+ * @param checksLength the the checks length
+ * @returns the next item to be selected.
+ */
+export function getPreviousCheckItemIndex(currentCheckIndex: number, checksLength: number) {
+  const previousCheckIndex = currentCheckIndex - 1;
+  if (previousCheckIndex < 0) {
+    return checksLength - 1;
+  }
+  return previousCheckIndex;
 }

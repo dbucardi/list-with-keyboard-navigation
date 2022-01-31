@@ -12,10 +12,22 @@ export function SimpleAnswer(props: ISimpleAnswerProps) {
 
   return (
     <div role="radiogroup">
-      <StyledLeftButton onClick={() => onChange('yes')} role="radio" aria-checked={value === 'yes'} disabled={disabled}>
+      <StyledLeftButton
+        type="button"
+        onClick={() => onChange('yes')}
+        role="radio"
+        aria-checked={value === 'yes'}
+        disabled={disabled}
+      >
         Yes
       </StyledLeftButton>
-      <StyledRightButton onClick={() => onChange('no')} role="radio" aria-checked={value === 'no'} disabled={disabled}>
+      <StyledRightButton
+        type="button"
+        onClick={() => onChange('no')}
+        role="radio"
+        aria-checked={value === 'no'}
+        disabled={disabled}
+      >
         No
       </StyledRightButton>
     </div>

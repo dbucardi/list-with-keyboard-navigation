@@ -1,15 +1,16 @@
-import { useEffect, useState } from 'react';
+import { FormEventHandler, useEffect, useState } from 'react';
 
 import { fetchChecks, submitCheckResults } from '../../services/api';
 import { ICheckItem } from '../../services/interfaces';
 import {
   isCheckFormSubmitAllowed,
   createDisabledChecksMap,
-  resetAnswersAhead,
+  resetAllAnswersBellowIndex,
   compareCheckByPriority,
+  getNextCheckItemIndex,
+  getPreviousCheckItemIndex,
 } from '../../domain/checklist';
 import { AnswersMap, AnswerValue, DisabledChecksMap } from '../../domain/interfaces';
-import { KeyboardActionType, useKeyboardActions } from './useKeyboardActions';
 
 export function useCheckListState() {
   const [checks, setChecks] = useState<ICheckItem[]>([]);
@@ -22,7 +23,6 @@ export function useCheckListState() {
   const [submitting, setSubmitting] = useState(false);
   const [formSubmitted, setFormSubmitted] = useState(false);
   const [activeCheckItem, setActiveCheckItem] = useState<ICheckItem>();
-  useKeyboardActions(handleKeyboardActions);
 
   useEffect(() => {
     fetchData();
@@ -48,7 +48,12 @@ export function useCheckListState() {
       .finally(() => setLoading(false));
   }
 
-  function handleSubmitCheck() {
+  function getActiveCheckItemIndex() {
+    return checks.findIndex((check) => check.id === activeCheckItem?.id) || 0;
+  }
+
+  function handleSubmitCheck(e: React.FormEvent<HTMLFormElement>) {
+    e.preventDefault();
     setSubmitting(true);
     submitCheckResults(
       Object.keys(answersMap).map((key) => {
@@ -68,7 +73,7 @@ export function useCheckListState() {
 
   const handleChangeAnswer = (check: ICheckItem, index: number) => (newValue: AnswerValue) => {
     setAnswerMap((currentAnswerMap) => {
-      const answerMapReseted = resetAnswersAhead(currentAnswerMap, checks, index);
+      const answerMapReseted = resetAllAnswersBellowIndex(currentAnswerMap, checks, index);
       return { ...answerMapReseted, [check.id]: newValue };
     });
   };
@@ -81,35 +86,23 @@ export function useCheckListState() {
     setActiveCheckItem(item);
   }
 
-  function handleKeyboardActions(actionType: KeyboardActionType) {
-    const currentCheckIndex = checks.findIndex((check) => check.id === activeCheckItem?.id) || 0;
-    const disabledCheck = activeCheckItem ? disabledChecksMap[activeCheckItem.id] : false;
-    const shouldCallAction = activeCheckItem && !disabledCheck;
+  function handleNextActiveItem() {
+    const activeCheckItemIndex = getActiveCheckItemIndex();
+    const nextCheckIndex = getNextCheckItemIndex(activeCheckItemIndex, checks.length);
+    setActiveCheckItem(checks[nextCheckIndex]);
+  }
 
-    switch (actionType) {
-      case KeyboardActionType.ArrowDown:
-        const nextCheckIndex = currentCheckIndex + 1;
-        if (nextCheckIndex > checks.length - 1) {
-          setActiveCheckItem(checks[0]);
-          return;
-        }
-        setActiveCheckItem(checks[nextCheckIndex]);
-        break;
-      case KeyboardActionType.ArrowUp:
-        const previousCheckIndex = currentCheckIndex - 1;
-        if (previousCheckIndex < 0) {
-          setActiveCheckItem(checks[checks.length - 1]);
-          return;
-        }
-        setActiveCheckItem(checks[previousCheckIndex]);
-        break;
-      case KeyboardActionType.Yes:
-        shouldCallAction && handleChangeAnswer(activeCheckItem, currentCheckIndex)('yes');
-        break;
-      case KeyboardActionType.No:
-        shouldCallAction && handleChangeAnswer(activeCheckItem, currentCheckIndex)('no');
-        break;
-    }
+  function handlePreviousActiveItem() {
+    const activeCheckItemIndex = getActiveCheckItemIndex();
+    const nextCheckIndex = getPreviousCheckItemIndex(activeCheckItemIndex, checks.length);
+    setActiveCheckItem(checks[nextCheckIndex]);
+  }
+
+  function handleChangeAnswerByKeyboard(answer: AnswerValue) {
+    const activeCheckItemIndex = getActiveCheckItemIndex();
+    const disabledCheck = activeCheckItem ? disabledChecksMap[activeCheckItem.id] : false;
+    const shouldCallChangeAnswer = activeCheckItem && !disabledCheck;
+    shouldCallChangeAnswer && handleChangeAnswer(activeCheckItem, activeCheckItemIndex)(answer);
   }
 
   return {
@@ -127,5 +120,8 @@ export function useCheckListState() {
     handleChangeAnswer,
     handleRetry,
     handleCheckListItemFocus,
+    handleNextActiveItem,
+    handlePreviousActiveItem,
+    handleChangeAnswerByKeyboard,
   };
 }

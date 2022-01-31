@@ -1,11 +1,11 @@
 import { Button } from '../../components/Button';
 import { Label } from '../../components/Label';
-import { CheckList, CheckListItem } from '../../components/CheckList';
+import { CheckList, CheckListItem, KeyboardNavigation } from '../../components/CheckList';
 import { SimpleAnswer } from '../../components/SimpleAnswer';
 import { Spinner } from '../../components/Spinner';
+import { MessageContainer, Message } from '../../components/Message';
 import { useCheckListState } from './useCheckListState';
-
-import { StyledActionsContainer, StyledContainer, StyledMessageContainer, StyledErrorMessage } from './style';
+import { StyledActionsContainer, StyledContainer } from './style';
 
 export function CheckListPage() {
   const {
@@ -23,11 +23,19 @@ export function CheckListPage() {
     handleChangeAnswer,
     handleRetry,
     handleCheckListItemFocus,
+    handleNextActiveItem,
+    handlePreviousActiveItem,
+    handleChangeAnswerByKeyboard,
   } = useCheckListState();
 
   const renderCheckListForm = () => (
-    <>
+    <form onSubmit={handleSubmitCheck}>
       <CheckList data-testid="checklist">
+        <KeyboardNavigation
+          onNext={handleNextActiveItem}
+          onPrevious={handlePreviousActiveItem}
+          onChangeAnswer={handleChangeAnswerByKeyboard}
+        />
         {checks.map((check, index) => {
           const disabledCheck = disabledChecksMap[check.id];
 
@@ -46,7 +54,6 @@ export function CheckListPage() {
                 onChange={handleChangeAnswer(check, index)}
                 value={answersMap[check.id]}
                 disabled={disabledCheck}
-                data-testid={`simple-answer[${index}]`}
               />
             </CheckListItem>
           );
@@ -54,39 +61,45 @@ export function CheckListPage() {
       </CheckList>
       {submitError ? renderSubmitErrorMessage() : <></>}
       <StyledActionsContainer>
-        <Button onClick={handleSubmitCheck} disabled={disabledSubmit || submitting}>
+        <Button type="submit" data-testid="submit-btn" disabled={disabledSubmit || submitting}>
           SUBMIT
         </Button>
       </StyledActionsContainer>
-    </>
+    </form>
   );
 
   const renderErrorMessage = () => (
-    <StyledMessageContainer>
-      <StyledErrorMessage data-testid="error-fetching-checks-message">
+    <MessageContainer>
+      <Message data-testid="error-fetching-checks-message" messageType="error">
         Ops, somenthing went wrong with our application.
-      </StyledErrorMessage>
+      </Message>
       <StyledActionsContainer>
-        <Button onClick={handleRetry}>Retry</Button>
+        <Button type="button" onClick={handleRetry}>
+          Retry
+        </Button>
       </StyledActionsContainer>
-    </StyledMessageContainer>
+    </MessageContainer>
   );
 
   const renderSubmitErrorMessage = () => (
-    <StyledMessageContainer>
-      <StyledErrorMessage data-testid="error-submitting-message">
+    <MessageContainer>
+      <Message data-testid="error-submitting-message" messageType="error">
         Error trying to submit the form, please try again.
-      </StyledErrorMessage>
-    </StyledMessageContainer>
+      </Message>
+    </MessageContainer>
   );
 
   const renderFormSubmitedMessage = () => (
-    <StyledMessageContainer data-testid="form-sent-message">The form was sent successfully!</StyledMessageContainer>
+    <MessageContainer>
+      <Message data-testid="form-sent-message" messageType="success">
+        The form was sent successfully!
+      </Message>
+    </MessageContainer>
   );
 
   return (
     <StyledContainer>
-      {loading ? <Spinner data-testid="spinner" /> : <></>}
+      {loading ? <Spinner /> : <></>}
       {checks.length > 0 && !formSubmitted ? renderCheckListForm() : <></>}
       {formSubmitted ? renderFormSubmitedMessage() : <></>}
       {error ? renderErrorMessage() : <></>}

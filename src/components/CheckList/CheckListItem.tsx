@@ -5,12 +5,12 @@ interface ICheckListItemProps {
   children: React.ReactNode;
   active: boolean;
   disabled?: boolean;
+  'data-testid'?: string;
   onFocus?: React.FocusEventHandler<HTMLLIElement>;
-  onBlur?: React.FocusEventHandler<HTMLLIElement>;
 }
 
 export function CheckListItem(props: ICheckListItemProps) {
-  const { children, active, disabled = false, onFocus = () => {}, onBlur = () => {} } = props;
+  const { children, active, disabled = false, 'data-testid': dataTestid, onFocus = () => {} } = props;
   const itemRef = useRef<HTMLLIElement>(null);
 
   useLayoutEffect(() => {
@@ -22,7 +22,7 @@ export function CheckListItem(props: ICheckListItemProps) {
   }, [active]);
 
   return (
-    <StyledCheckListItem tabIndex={disabled ? -1 : 0} onFocus={onFocus} onBlur={onBlur} ref={itemRef}>
+    <StyledCheckListItem data-testid={dataTestid} tabIndex={disabled ? -1 : 0} onFocus={onFocus} ref={itemRef}>
       {children}
     </StyledCheckListItem>
   );
