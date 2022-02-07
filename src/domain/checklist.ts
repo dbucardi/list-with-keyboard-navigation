@@ -18,21 +18,19 @@ export function isCheckFormSubmitAllowed(answersMap: AnswersMap, checks: ICheckI
 }
 
 /**
- * This method creates a key value object identifying if the check should be disabled or enabled.
+ * This method checks if the check answer is allowed based on the answers and the current check index.
  * @param answersMap key value object where key is the check id and the value is the answer.
  * @param checks the checks sorted by priority.
- * @returns a key value object identifying if the check should be disabled or enabled.
+ * @param index the current check index.
+ * @returns true if the answer is allowed.
  */
-export function createDisabledChecksMap(answersMap: AnswersMap, checks: ICheckItem[]): { [key: string]: boolean } {
-  return checks.reduce((map, check, index) => {
-    const isFirstCheck = index === 0;
-    if (isFirstCheck) return { ...map, [check.id]: false };
+export function isAnswerAllowed(answersMap: AnswersMap, checks: ICheckItem[], index: number): boolean {
+  const isFirstCheck = index === 0;
+  if (isFirstCheck) return true;
 
-    const previousCheck = checks[index - 1];
-    const previousAnswer = answersMap[previousCheck.id];
-    const enableCheck = previousAnswer === 'yes';
-    return { ...map, [check.id]: !enableCheck };
-  }, {});
+  const previousCheck = checks[index - 1];
+  const previousAnswer = answersMap[previousCheck.id];
+  return previousAnswer === 'yes';
 }
 
 /**

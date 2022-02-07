@@ -1,6 +1,6 @@
 import {
   compareCheckByPriority,
-  createDisabledChecksMap,
+  isAnswerAllowed,
   isCheckFormSubmitAllowed,
   resetAllAnswersBellowIndex,
   getNextCheckItemIndex,
@@ -13,32 +13,32 @@ const mockedChecks: ICheckItem[] = [
   { id: 'aaa', description: 'Check 1', priority: 1 },
   { id: 'bbb', description: 'Check 2', priority: 2 },
   { id: 'ccc', description: 'Check 3', priority: 3 },
-  { id: 'ddd', description: 'Check 4', priority: 3 },
+  { id: 'ddd', description: 'Check 4', priority: 4 },
 ];
 
-describe('Checklist function createDisabledChecksMap', () => {
+describe('Checklist function isAnswerAllowed', () => {
   it('Only the first check should be enabled when No answer was given', () => {
-    const result = createDisabledChecksMap({}, mockedChecks);
-    expect(result['aaa']).toBeFalsy();
-    expect(result['bbb']).toBeTruthy();
-    expect(result['ccc']).toBeTruthy();
-    expect(result['ddd']).toBeTruthy();
+    const answersMap: AnswersMap = {};
+    expect(isAnswerAllowed(answersMap, mockedChecks, 0)).toBeTruthy();
+    expect(isAnswerAllowed(answersMap, mockedChecks, 1)).toBeFalsy();
+    expect(isAnswerAllowed(answersMap, mockedChecks, 2)).toBeFalsy();
+    expect(isAnswerAllowed(answersMap, mockedChecks, 3)).toBeFalsy();
   });
 
-  it('Only the check immediately bellow the Yes answer should be enabled', () => {
-    const result = createDisabledChecksMap({ aaa: 'yes' }, mockedChecks);
-    expect(result['aaa']).toBeFalsy();
-    expect(result['bbb']).toBeFalsy();
-    expect(result['ccc']).toBeTruthy();
-    expect(result['ddd']).toBeTruthy();
+  it('Only the check immediately bellow the Yes answer should be allowed', () => {
+    const answersMap: AnswersMap = { aaa: 'yes' };
+    expect(isAnswerAllowed(answersMap, mockedChecks, 0)).toBeTruthy();
+    expect(isAnswerAllowed(answersMap, mockedChecks, 1)).toBeTruthy();
+    expect(isAnswerAllowed(answersMap, mockedChecks, 2)).toBeFalsy();
+    expect(isAnswerAllowed(answersMap, mockedChecks, 3)).toBeFalsy();
   });
 
-  it('Checks bellow a No answer should be disabled', () => {
-    const result = createDisabledChecksMap({ aaa: 'yes', bbb: 'no' }, mockedChecks);
-    expect(result['aaa']).toBeFalsy();
-    expect(result['bbb']).toBeFalsy();
-    expect(result['ccc']).toBeTruthy();
-    expect(result['ddd']).toBeTruthy();
+  it('Checks bellow a No answer should not be allowed', () => {
+    const answersMap: AnswersMap = { aaa: 'yes', bbb: 'no' };
+    expect(isAnswerAllowed(answersMap, mockedChecks, 0)).toBeTruthy();
+    expect(isAnswerAllowed(answersMap, mockedChecks, 1)).toBeTruthy();
+    expect(isAnswerAllowed(answersMap, mockedChecks, 2)).toBeFalsy();
+    expect(isAnswerAllowed(answersMap, mockedChecks, 3)).toBeFalsy();
   });
 });
 

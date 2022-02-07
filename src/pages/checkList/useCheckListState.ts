@@ -1,22 +1,19 @@
-import { FormEventHandler, useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 
 import { fetchChecks, submitCheckResults } from '../../services/api';
 import { ICheckItem } from '../../services/interfaces';
 import {
-  isCheckFormSubmitAllowed,
-  createDisabledChecksMap,
   resetAllAnswersBellowIndex,
   compareCheckByPriority,
   getNextCheckItemIndex,
   getPreviousCheckItemIndex,
+  isAnswerAllowed,
 } from '../../domain/checklist';
-import { AnswersMap, AnswerValue, DisabledChecksMap } from '../../domain/interfaces';
+import { AnswersMap, AnswerValue } from '../../domain/interfaces';
 
 export function useCheckListState() {
   const [checks, setChecks] = useState<ICheckItem[]>([]);
   const [answersMap, setAnswerMap] = useState<AnswersMap>({});
-  const [disabledChecksMap, setDisabledChecksMap] = useState<DisabledChecksMap>({});
-  const [disabledSubmit, setDisabledSubmit] = useState(true);
   const [error, setError] = useState(false);
   const [submitError, setSubmitError] = useState(false);
   const [loading, setLoading] = useState(false);
@@ -27,11 +24,6 @@ export function useCheckListState() {
   useEffect(() => {
     fetchData();
   }, []);
-
-  useEffect(() => {
-    setDisabledSubmit(!isCheckFormSubmitAllowed(answersMap, checks));
-    setDisabledChecksMap(createDisabledChecksMap(answersMap, checks));
-  }, [answersMap, checks]);
 
   function fetchData() {
     setLoading(true);
@@ -100,16 +92,13 @@ export function useCheckListState() {
 
   function handleChangeAnswerByKeyboard(answer: AnswerValue) {
     const activeCheckItemIndex = getActiveCheckItemIndex();
-    const disabledCheck = activeCheckItem ? disabledChecksMap[activeCheckItem.id] : false;
-    const shouldCallChangeAnswer = activeCheckItem && !disabledCheck;
+    const shouldCallChangeAnswer = activeCheckItem && isAnswerAllowed(answersMap, checks, activeCheckItemIndex);
     shouldCallChangeAnswer && handleChangeAnswer(activeCheckItem, activeCheckItemIndex)(answer);
   }
 
   return {
     checks,
     answersMap,
-    disabledChecksMap,
-    disabledSubmit,
     error,
     submitError,
     loading,

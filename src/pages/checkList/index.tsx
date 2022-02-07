@@ -6,13 +6,12 @@ import { Spinner } from '../../components/Spinner';
 import { MessageContainer, Message } from '../../components/Message';
 import { useCheckListState } from './useCheckListState';
 import { StyledActionsContainer, StyledContainer } from './style';
+import { isAnswerAllowed, isCheckFormSubmitAllowed } from '../../domain/checklist';
 
 export function CheckListPage() {
   const {
     checks,
     answersMap,
-    disabledChecksMap,
-    disabledSubmit,
     error,
     submitError,
     loading,
@@ -37,7 +36,7 @@ export function CheckListPage() {
           onChangeAnswer={handleChangeAnswerByKeyboard}
         />
         {checks.map((check, index) => {
-          const disabledCheck = disabledChecksMap[check.id];
+          const disabledCheck = !isAnswerAllowed(answersMap, checks, index);
 
           return (
             <CheckListItem
@@ -61,7 +60,11 @@ export function CheckListPage() {
       </CheckList>
       {submitError ? renderSubmitErrorMessage() : <></>}
       <StyledActionsContainer>
-        <Button type="submit" data-testid="submit-btn" disabled={disabledSubmit || submitting}>
+        <Button
+          type="submit"
+          data-testid="submit-btn"
+          disabled={!isCheckFormSubmitAllowed(answersMap, checks) || submitting}
+        >
           SUBMIT
         </Button>
       </StyledActionsContainer>
@@ -89,7 +92,7 @@ export function CheckListPage() {
     </MessageContainer>
   );
 
-  const renderFormSubmitedMessage = () => (
+  const renderFormSubmittedMessage = () => (
     <MessageContainer>
       <Message data-testid="form-sent-message" messageType="success">
         The form was sent successfully!
@@ -101,7 +104,7 @@ export function CheckListPage() {
     <StyledContainer>
       {loading ? <Spinner /> : <></>}
       {checks.length > 0 && !formSubmitted ? renderCheckListForm() : <></>}
-      {formSubmitted ? renderFormSubmitedMessage() : <></>}
+      {formSubmitted ? renderFormSubmittedMessage() : <></>}
       {error ? renderErrorMessage() : <></>}
     </StyledContainer>
   );
