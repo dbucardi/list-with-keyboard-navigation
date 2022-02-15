@@ -9,22 +9,22 @@ export function fetchChecks(): Promise<ICheckItem[]> {
               {
                 id: 'aaa',
                 priority: 10,
-                description: 'Face on the picture matches face on the document',
+                description: 'Verification item 1',
               },
               {
                 id: 'bbb',
                 priority: 5,
-                description: 'Veriff supports presented document',
+                description: 'Verification item 2',
               },
               {
                 id: 'ccc',
                 priority: 7,
-                description: 'Face is clearly visible',
+                description: 'Verification item 3',
               },
               {
                 id: 'ddd',
                 priority: 3,
-                description: 'Document data is clearly visible',
+                description: 'Verification item 4',
               },
             ])
           : reject({ success: false }),
